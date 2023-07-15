@@ -3,47 +3,53 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const turf = require('@turf/turf');
 const { generateLines } = require('./generateLines');
-const { authenticate } = require('./authenticate')
+const { authenticate } = require('./authenticate');
 
 const app = express();
 //port
 const port = 5001;
 
-app.use(bodyParser.json());
+
+app.use(bodyParser.json({ limit: '50mb' }));
+
 
 app.post("/intersect", authenticate, (req, res) => {
-    console.log(req.body);
-    const lineString = req.body;
-
-    if ( !lineString || !lineString.coordinates || lineString.coordinates.length == 0 ) {
-        res.status(400).json({ error: "Invalid lineString!" });
-        return;
-    }
 
     try {
-        //converting the JSON lineString into turf lineString
+        console.log(req.body);
+        // Check if linestring file is missing
+        if (!req.body || req.body.type !== 'LineString') { 
+            res.status(400).json({ error: 'Linestring file is missing!' });
+            return;
+        }
+
+        // Parse the linestring from the file buffer
+        const lineString = req.body;
+        console.log(lineString);
+
+        // Check if the linestring is valid
+        if (!lineString || lineString.type !== 'LineString' || lineString.coordinates.length === 0) {
+            res.status(400).json({ error: "Invalid lineString!" });
+            return;
+        }
+
+        // Convert the linestring to turf lineString
         const newLineString = turf.lineString(lineString.coordinates);
-        console.log(newLineString); 
 
-        //generating scattered lines
+        // Generate scattered lines
         const lines = generateLines();
-        console.log(lines);
 
-        //finding intersections using turf intersect
+        // Find intersections using turf lineIntersect
         const intersections = turf.lineIntersect(newLineString, lines);
-        console.log(intersections);
 
-        //if no intersections found
-        if (intersections.features.length == 0) {
+        // Return the intersecting line IDs and points of intersection
+        if (intersections.features.length === 0) {
             res.json([]);
         } else {
-            const intersectingLineIDs = intersections.features.map((feature) => {
-                return {
-                    id: feature.properties.id,
-                    point: feature.geometry.coordinates,
-                };
-            });
-            console.log(intersectingLineIDs);
+            const intersectingLineIDs = intersections.features.map((feature) => ({
+                id: feature.properties.id,
+                point: feature.geometry.coordinates,
+            }));
             res.json(intersectingLineIDs);
         }
     } catch (error) {
