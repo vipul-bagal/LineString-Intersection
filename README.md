@@ -46,5 +46,6 @@ As many coordinates as want can be added to this request.
 5. Go to Body tab 
     a. select the 'binary' option and browse and select the json file.
     b. select the 'raw' as an option and paste the JSON data into text field.
+You can download the JSON file from here. ->  https://bit.ly/3krGkTN 
 6. Press the send button and check the output.
 
