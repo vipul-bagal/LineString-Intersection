@@ -1,4 +1,4 @@
-# mapup_assginment
+# LineString-Intersections
 This is a Node.js application that provides an API for finding intersections between a given LineString and scattered lines using the Turf.js library.
 This API is built using Express and Node.js and utilizes the Turf.js librabry for geometric calculations.
 
