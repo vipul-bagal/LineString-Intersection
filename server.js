@@ -9,14 +9,12 @@ const app = express();
 //port
 const port = 5001;
 
-
 app.use(bodyParser.json({ limit: '50mb' }));
-
 
 app.post("/intersect", authenticate, (req, res) => {
 
     try {
-        console.log(req.body);
+        //console.log(req.body);
         // Check if linestring file is missing
         if (!req.body || req.body.type !== 'LineString') { 
             res.status(400).json({ error: 'Linestring file is missing!' });
@@ -25,7 +23,7 @@ app.post("/intersect", authenticate, (req, res) => {
 
         // Parse the linestring from the file buffer
         const lineString = req.body;
-        console.log(lineString);
+        //console.log(lineString);
 
         // Check if the linestring is valid
         if (!lineString || lineString.type !== 'LineString' || lineString.coordinates.length === 0) {
@@ -53,7 +51,7 @@ app.post("/intersect", authenticate, (req, res) => {
             res.json(intersectingLineIDs);
         }
     } catch (error) {
-        console.log(error);
+        //console.log(error);
         res.status(500).json({ error: "Invalid lineString" });
     }
 });
